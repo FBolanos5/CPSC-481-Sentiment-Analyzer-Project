@@ -36,7 +36,7 @@ if __name__ == "__main__":
     print("2. Check a saved csv file filled with posts about CSUF.")
     print("0. Exit the application\n")
     choice = int(input("Choice: "))
-    while choice != 0:
+    while True:
         if choice == 1:
             rate_sentence = input("Enter a sentence: ")
             score = polarity_scores(rate_sentence)
@@ -52,6 +52,7 @@ if __name__ == "__main__":
             social_media_csv()
             choice = int(input("Choice: "))
         elif choice == 0:
+            print("Thank you for using the analyzer, goodbye!")
             break
         else:
             print("Not an available choice please try again")

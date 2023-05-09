@@ -1,28 +1,51 @@
-import pandas as pd
+import pandas as pd  
+import time
+import re
 import nltk
+import csv
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
 
+stopwords = nltk.corpus.stopwords.words("english")
+regToken = RegexpTokenizer('\w+')
+wnl = WordNetLemmatizer() 
+sid = SentimentIntensityAnalyzer()
+def polarity_scores(text):
+    scores = sid.polarity_scores(text)
+    compounded_score = scores['compound']      
+    return compounded_score
 
-sentences = ["This analyzer is awesome!", "This anaylzer sucks!", "This analyzer is okay"]
-pos_counter = 0
-neg_counter = 0
-neu_counter = 0
-for sentence in sentences:
-    sid = SentimentIntensityAnalyzer()
-    print(sentence)
-    ss = sid.polarity_scores(sentence)
-    if ss['compound'] > .5:
-        pos_counter += 1 
-    elif ss['compound'] > 0:
-        neu_counter += 1
-    else:
-        neg_counter += 1
-    for k in sorted(ss):
-        print('{0}: {1}, '.format(k, ss[k]), end='')    
-    print()
-print("Amount Positive: ", pos_counter)
-print("Amount Neutral: ", neu_counter)
-print("Amount Negative: ", neg_counter)
+
+def social_media_csv(): 
+    df = pd.read_csv("sm_posts.csv")
+    df['Text'] = df['Text'].apply(regToken.tokenize)
+    df['Text'] = df['Text'].apply(lambda x: [item for item in x if item not in stopwords])
+    df['Text_String'] = df['Text'].apply(lambda x: ' '.join([item for item in x if len(item)>1]))
+    df['Text_Lemmatized'] = df['Text_String'].apply(wnl.lemmatize)
+    df['Sentiment_Score'] = df['Text_String'].apply(polarity_scores) 
+    df['Pos/Neg/Neu'] = df['Sentiment_Score'].apply(lambda x: 'positive' if x > .45 else 'neutral' if x >= 0 else 'negative')
+    print(df)
+    
+    
+if __name__ == "__main__":
+    print("Welcome to the Sentiment Analyzer\n")
+    print("Select a choice\n")
+    print("0. Exit the application")
+    print("1. Enter sentence to get it rated")
+    print("2. Check a saved csv file filled with posts about CSUF.\n")
+    choice = int(input("Choice: "))
+    while choice != 0:
+        if choice == 1:
+            rate_sentence = input("Enter a sentence: ")
+            print(polarity_scores(rate_sentence))
+            choice = int(input("Choice: "))
+        elif choice == 2:
+            social_media_csv()
+            choice = int(input("Choice: "))
+        elif choice == 0:
+            break
+        else:
+            print("Not an available choice please try again")
+            choice = int(input("Choice: "))

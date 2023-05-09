@@ -20,12 +20,15 @@ def polarity_scores(text):
 
 def social_media_csv(): 
     df = pd.read_csv("sm_posts.csv")
+    pd.options.display.max_colwidth = 100
     df['Text'] = df['Text'].apply(regToken.tokenize)
     df['Text'] = df['Text'].apply(lambda x: [item for item in x if item not in stopwords])
     df['Text_String'] = df['Text'].apply(lambda x: ' '.join([item for item in x if len(item)>1]))
     df['Text_Lemmatized'] = df['Text_String'].apply(wnl.lemmatize)
-    df['Sentiment_Score'] = df['Text_String'].apply(polarity_scores) 
+    df['Sentiment_Score'] = df['Text_Lemmatized'].apply(polarity_scores) 
     df['Pos/Neg/Neu'] = df['Sentiment_Score'].apply(lambda x: 'positive' if x > .45 else 'neutral' if x >= 0 else 'negative')
+    print(df)
+    df = df.drop(['Date', 'Human','Text'], axis = 'columns')
     print(df)
     
     
@@ -39,7 +42,14 @@ if __name__ == "__main__":
     while choice != 0:
         if choice == 1:
             rate_sentence = input("Enter a sentence: ")
-            print(polarity_scores(rate_sentence))
+            score = polarity_scores(rate_sentence)
+            print(score)
+            if score > .45:
+                print("Positive")
+            elif score >= 0:
+                print("Neutral")
+            else:
+                print("Negative") 
             choice = int(input("Choice: "))
         elif choice == 2:
             social_media_csv()

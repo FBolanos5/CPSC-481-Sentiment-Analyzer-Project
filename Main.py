@@ -1,8 +1,5 @@
 import pandas as pd  
-import time
-import re
 import nltk
-import csv
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
@@ -35,9 +32,9 @@ def social_media_csv():
 if __name__ == "__main__":
     print("Welcome to the Sentiment Analyzer\n")
     print("Select a choice\n")
-    print("0. Exit the application")
     print("1. Enter sentence to get it rated")
-    print("2. Check a saved csv file filled with posts about CSUF.\n")
+    print("2. Check a saved csv file filled with posts about CSUF.")
+    print("0. Exit the application\n")
     choice = int(input("Choice: "))
     while choice != 0:
         if choice == 1:
